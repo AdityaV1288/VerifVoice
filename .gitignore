@@ -1,0 +1,24 @@
+# VerifVoice — gitignore (do NOT commit these)
+.venv/
+tools/ffmpeg/
+
+# reference material (not part of the submission repo)
+playbook.pdf
+playbook_ocr.txt
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.env
+*.wav
+*.mp3
+*.m4a
+*.flac
+*.ogg
+data/raw/
+models/*.pt
+models/*.pth
+models/*.onnx
+*.log
+.DS_Store
+Thumbs.db

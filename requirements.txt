@@ -1,0 +1,41 @@
+# VerifVoice — Python environment (Person 1 + Person 2 + shared backend)
+# Install:  .venv\Scripts\python.exe -m pip install -r requirements.txt
+
+# ---- core / numeric ----
+numpy
+scipy
+pandas
+python-dotenv
+
+# ---- audio processing (Person 1) ----
+librosa
+soundfile
+pydub
+resampy
+
+# ---- ML (Person 1 fallback classifier + Person 2 optional classifier) ----
+scikit-learn
+joblib
+
+# ---- ONNX (Person 1: LinuxONE / zDLC inference path) ----
+onnx
+onnxruntime
+skl2onnx
+
+# ---- deep learning (Person 1 AASIST-family + Person 2 ASR) ----
+torch
+torchaudio
+transformers
+faster-whisper
+
+# ---- bundled ffmpeg binary (no system install needed) ----
+imageio-ffmpeg
+
+# ---- backend / integration (Person 3 FastAPI, shared) ----
+fastapi
+uvicorn[standard]
+pydantic
+httpx
+
+# ---- utils ----
+tqdm
