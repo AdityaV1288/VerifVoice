@@ -19,8 +19,10 @@ Try it:
 import time
 import uuid
 from contextlib import asynccontextmanager
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -28,6 +30,7 @@ import semantic_model  # Person 2's module
 import pipeline        # Person 1 + Person 2 integration layer
 import risk_engine     # risk fusion (fallback until P4 delivers)
 import token_store     # in-memory risk tokens
+from audio_authenticity import AudioAnalysisService, DetectorConfig as AudioDetectorConfig
 
 # --------------------------------------------------------------------------- #
 # Request / response models
@@ -79,6 +82,20 @@ class PaymentDecisionResponse(BaseModel):
 _metrics: dict = {"analyze_requests": 0, "payment_requests": 0,
                   "last_analyze_ms": None, "last_payment_ms": None}
 
+# Cached audio-authenticity service for /health (avoid reloading weights each call).
+_audio_service = None
+
+
+def _audio_health() -> str:
+    """Report P1's adapter readiness: 'ready' | 'model_unavailable' | 'unavailable'."""
+    global _audio_service
+    try:
+        if _audio_service is None:
+            _audio_service = AudioAnalysisService(AudioDetectorConfig.from_env())
+        return "ready" if _audio_service.detector.health_check() else "model_unavailable"
+    except Exception:
+        return "unavailable"
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -114,14 +131,15 @@ def health():
         "status": "ok",
         "semantic_rules": "ready",                       # Person 2 core (always)
         "transcription": ("ready" if semantic_model.transcription_ready() else "unavailable"),
+        "audio_authenticity": _audio_health(),           # Person 1 adapter
+        "risk_engine": "ready",                          # fusion (fallback always available)
     }
 
 
-@app.post("/analyze", response_model=AnalyzeResponse)
-def analyze(req: AnalyzeRequest):
-    """Accept a sample (text or audio) and return coercion + spoof signals."""
+def _run_analyze(source: str, input_type: str, lang: str) -> AnalyzeResponse:
+    """Shared core: run the pipeline, store a token, return the response."""
     t0 = time.perf_counter()
-    result = pipeline.analyze_call(req.source, input_type=req.input_type, lang=req.lang)
+    result = pipeline.analyze_call(source, input_type=input_type, lang=lang)
 
     _metrics["analyze_requests"] += 1
     _metrics["last_analyze_ms"] = round((time.perf_counter() - t0) * 1000, 2)
@@ -148,6 +166,22 @@ def analyze(req: AnalyzeRequest):
         quality_score=result["quality_score"],
         model_name=result["model_name"],
     )
+
+
+@app.post("/analyze", response_model=AnalyzeResponse)
+def analyze(req: AnalyzeRequest):
+    """Accept a sample (text or an audio path) and return coercion + spoof signals."""
+    return _run_analyze(req.source, req.input_type, req.lang)
+
+
+@app.post("/analyze/upload", response_model=AnalyzeResponse)
+async def analyze_upload(file: UploadFile = File(...), lang: str = "en"):
+    """Accept an uploaded audio file (multipart) — for P5's frontend."""
+    suffix = Path(file.filename or "call.wav").suffix or ".wav"
+    with TemporaryDirectory() as directory:
+        path = Path(directory) / f"call{suffix}"
+        path.write_bytes(await file.read())
+        return _run_analyze(str(path), input_type="audio", lang=lang)
 
 
 @app.post("/payment/decision", response_model=PaymentDecisionResponse)

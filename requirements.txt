@@ -35,6 +35,7 @@ imageio-ffmpeg
 fastapi
 uvicorn[standard]
 pydantic
+python-multipart
 httpx
 
 # ---- utils ----
