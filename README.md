@@ -18,6 +18,7 @@ speech is never treated as proof of fraud, and the user retains a safe override.
 | `risk_engine.py` | Person 4 | Risk fusion `R = 0.5C + 0.3S + 0.2N` + expiring risk token |
 | `bank_simulator.py` | Person 4 | Payment policy ladder + safe override |
 | `main.py` | Person 3 | FastAPI backend (`/health`, `/analyze`, `/payment/decision`, `/metrics`) |
+| `example_api.py` | Person 3 (reference) | Working FastAPI reference showing how to call `semantic_model` — rename to `main.py` |
 | `app.py` | Person 5 | Dashboard |
 
 ## Setup

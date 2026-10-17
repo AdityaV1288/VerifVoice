@@ -120,6 +120,22 @@ def transcribe(audio_path: str, lang: str = "auto") -> str:
         return ""
 
 
+def transcription_ready() -> bool:
+    """True if the ASR model is usable (already loaded, or present locally).
+
+    Does NOT trigger a download — safe to call from a /health endpoint. If
+    False, the rule engine still works; only audio->text is unavailable.
+    """
+    import os
+    if _model is not None:
+        return True
+    local = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "models", "faster-whisper-base",
+    )
+    return os.path.isfile(os.path.join(local, "model.bin"))
+
+
 def analyze_transcript(text: str, lang: str = "en") -> dict:
     """Analyze transcript text and return the coercion signal (§3.1 schema).
 
