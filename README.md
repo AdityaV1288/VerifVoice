@@ -14,11 +14,13 @@ speech is never treated as proof of fraud, and the user retains a safe override.
 |---|---|---|
 | `semantic_model.py` | Person 2 | Speech & coercion detection (transcript → coercion score + reason codes) |
 | `semantic_config.py` | Person 2 | Signals, weights, reason codes, gates |
+| `semantic_tests.py` | Person 2 | Smoke tests (6 core behaviours) |
+| `run_eval.py` | Person 2 | Formal evaluation — 22 fixtures + metrics + stability + no-persistence |
+| `example_api.py` | Person 3 (reference) | Working FastAPI reference showing how to call `semantic_model` — rename to `main.py` |
 | `audio_model.py` | Person 1 | Audio authenticity / anti-spoofing (spoof score) |
 | `risk_engine.py` | Person 4 | Risk fusion `R = 0.5C + 0.3S + 0.2N` + expiring risk token |
 | `bank_simulator.py` | Person 4 | Payment policy ladder + safe override |
 | `main.py` | Person 3 | FastAPI backend (`/health`, `/analyze`, `/payment/decision`, `/metrics`) |
-| `example_api.py` | Person 3 (reference) | Working FastAPI reference showing how to call `semantic_model` — rename to `main.py` |
 | `app.py` | Person 5 | Dashboard |
 
 ## Setup
@@ -30,6 +32,15 @@ python -c "import semantic_model; print('ok')"
 
 See `ENVIRONMENT.md` for the full setup guide.
 
+## Quick checks
+
+```powershell
+python semantic_tests.py    # 6 smoke tests
+python run_eval.py          # 22-fixture evaluation + safety metrics + stability
+```
+
 ## Status
 
-In progress — Person 2 module: Phase 1 skeleton committed (interface final, rule engine next).
+**Person 2 module: feature-complete and FROZEN** (tag `v0.1-freeze`). Rule engine + ASR + dispatcher +
+evaluation all working: 21/22 fixtures pass (1 deferred = Hindi/Hinglish, Phase 8), 0 false positives,
+golden path stable across 3 runs. See `EVALUATION_RESULTS.md` for the full evidence handoff to Person 6.

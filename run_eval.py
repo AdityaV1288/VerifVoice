@@ -105,9 +105,31 @@ def check_no_persistence():
         print("PASS - no file-write calls in semantic_model.py / semantic_config.py.")
 
 
+def check_stability(fixtures):
+    """Golden path must produce identical results across 3 runs (determinism)."""
+    print("\n--- Golden-path stability (3 identical runs) ---")
+    golden = next(f for f in fixtures if f["id"] == "T01")["text"]
+    outputs = [sm.analyze(golden) for _ in range(3)]
+    scores = [o["coercion_score"] for o in outputs]
+    codes = [tuple(o["reason_codes"]) for o in outputs]
+    stable = len(set(scores)) == 1 and len(set(codes)) == 1
+    print(f"score={scores[0]} codes={list(codes[0])} | stable={stable}")
+    return stable
+
+
+def save_results(rows):
+    """Write machine-readable results for Person 6 (and the README)."""
+    out = os.path.join(HERE, "data", "transcripts", "results.json")
+    with open(out, "w", encoding="utf-8") as fh:
+        json.dump(rows, fh, indent=2)
+    print(f"\nSaved results -> {out}")
+
+
 if __name__ == "__main__":
     data = json.load(open(FIXTURES, encoding="utf-8"))
     rows = run_fixtures(data["fixtures"])
     summarize(rows)
     run_edge_cases()
     check_no_persistence()
+    check_stability(data["fixtures"])
+    save_results(rows)

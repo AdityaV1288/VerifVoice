@@ -1,0 +1,200 @@
+[
+  {
+    "id": "T01",
+    "name": "Son in hospital (golden)",
+    "label": "coercive",
+    "score": 1.0,
+    "band": "high",
+    "expected": "high",
+    "status": "analyzed"
+  },
+  {
+    "id": "T02",
+    "name": "Police legal settlement",
+    "label": "coercive",
+    "score": 1.0,
+    "band": "high",
+    "expected": "high",
+    "status": "analyzed"
+  },
+  {
+    "id": "T03",
+    "name": "Bank OTP / account blocked",
+    "label": "coercive",
+    "score": 0.9,
+    "band": "high",
+    "expected": "high",
+    "status": "analyzed"
+  },
+  {
+    "id": "T04",
+    "name": "Customs / parcel seized",
+    "label": "coercive",
+    "score": 0.75,
+    "band": "high",
+    "expected": "high",
+    "status": "analyzed"
+  },
+  {
+    "id": "T05",
+    "name": "Lottery / prize fee",
+    "label": "coercive",
+    "score": 0.45,
+    "band": "moderate",
+    "expected": "moderate",
+    "status": "analyzed"
+  },
+  {
+    "id": "T06",
+    "name": "Kidnapping-style threat",
+    "label": "coercive",
+    "score": 0.75,
+    "band": "high",
+    "expected": "high",
+    "status": "analyzed"
+  },
+  {
+    "id": "T07",
+    "name": "Electricity disconnection",
+    "label": "coercive",
+    "score": 0.75,
+    "band": "high",
+    "expected": "high",
+    "status": "analyzed"
+  },
+  {
+    "id": "T08",
+    "name": "Hindi/Hinglish code-switching",
+    "label": "coercive",
+    "score": 0.3,
+    "band": "moderate",
+    "expected": "deferred",
+    "status": "analyzed"
+  },
+  {
+    "id": "T09",
+    "name": "Family catch-up",
+    "label": "benign",
+    "score": 0.0,
+    "band": "low",
+    "expected": "low",
+    "status": "analyzed"
+  },
+  {
+    "id": "T10",
+    "name": "Genuine emergency (no money)",
+    "label": "benign",
+    "score": 0.0,
+    "band": "low",
+    "expected": "low",
+    "status": "analyzed"
+  },
+  {
+    "id": "T11",
+    "name": "AAC/TTS benign pharmacy",
+    "label": "benign",
+    "score": 0.2,
+    "band": "low",
+    "expected": "low",
+    "status": "analyzed"
+  },
+  {
+    "id": "T12",
+    "name": "Legit bank fraud-alert call",
+    "label": "benign",
+    "score": 0.1,
+    "band": "low",
+    "expected": "low",
+    "status": "analyzed"
+  },
+  {
+    "id": "T13",
+    "name": "Friend splitting a bill",
+    "label": "benign",
+    "score": 0.2,
+    "band": "low",
+    "expected": "low",
+    "status": "analyzed"
+  },
+  {
+    "id": "T14",
+    "name": "Appointment reminder",
+    "label": "benign",
+    "score": 0.0,
+    "band": "low",
+    "expected": "low",
+    "status": "analyzed"
+  },
+  {
+    "id": "T15",
+    "name": "Known merchant payment",
+    "label": "benign",
+    "score": 0.2,
+    "band": "low",
+    "expected": "low",
+    "status": "analyzed"
+  },
+  {
+    "id": "T16",
+    "name": "Insufficient text",
+    "label": "ambiguous",
+    "score": 0.0,
+    "band": "low",
+    "expected": "low",
+    "status": "insufficient_text"
+  },
+  {
+    "id": "T17",
+    "name": "Unsupported language (Devanagari)",
+    "label": "ambiguous",
+    "score": 0.0,
+    "band": "low",
+    "expected": "low",
+    "status": "unsupported_language"
+  },
+  {
+    "id": "T18",
+    "name": "Real emergency + new payee (override)",
+    "label": "ambiguous",
+    "score": 0.45,
+    "band": "moderate",
+    "expected": "moderate",
+    "status": "analyzed"
+  },
+  {
+    "id": "T19",
+    "name": "Paraphrased coercion (recall gap)",
+    "label": "ambiguous",
+    "score": 0.0,
+    "band": "low",
+    "expected": "low",
+    "status": "analyzed"
+  },
+  {
+    "id": "T20",
+    "name": "Urgent legit hospital bill (known payee)",
+    "label": "ambiguous",
+    "score": 0.45,
+    "band": "moderate",
+    "expected": "moderate",
+    "status": "analyzed"
+  },
+  {
+    "id": "T21",
+    "name": "Romance / investment scam",
+    "label": "coercive",
+    "score": 0.7,
+    "band": "high",
+    "expected": "high",
+    "status": "analyzed"
+  },
+  {
+    "id": "T22",
+    "name": "Tech-support remote-access scam",
+    "label": "coercive",
+    "score": 0.85,
+    "band": "high",
+    "expected": "high",
+    "status": "analyzed"
+  }
+]
