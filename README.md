@@ -12,17 +12,16 @@ speech is never treated as proof of fraud, and the user retains a safe override.
 
 | Module | Owner | Purpose |
 |---|---|---|
+| `main.py` | Person 3 | FastAPI backend (`/health`, `/analyze`, `/analyze/upload`, `/payment/decision`, `/metrics`) — runs on LinuxONE |
+| `pipeline.py` | Person 3 | Integration: runs Person 1 + Person 2 together (`analyze_call`) |
+| `token_store.py` | Person 3 | In-memory risk tokens (TTL 120 s) |
+| `risk_engine.py` | P4 (fallback by P3) | Risk fusion `R = 0.5C + 0.3S + 0.2N` + policy ladder |
 | `semantic_model.py` | Person 2 | Speech & coercion detection (transcript → coercion score + reason codes) |
 | `semantic_config.py` | Person 2 | Signals, weights, reason codes, gates |
-| `semantic_tests.py` | Person 2 | Smoke tests (6 core behaviours) |
-| `run_eval.py` | Person 2 | Formal evaluation — 22 fixtures + metrics + stability + no-persistence |
-| `example_api.py` | Person 3 (reference) | Working FastAPI reference — rename to `main.py` |
-| `pipeline.py` | Person 3 | Integration layer: runs Person 1 + Person 2 together (`analyze_call`) |
 | `audio_authenticity/` | Person 1 | Audio authenticity package (`analyze_audio` → spoof score) |
-| `risk_engine.py` | Person 4 | Risk fusion `R = 0.5C + 0.3S + 0.2N` + expiring risk token |
-| `bank_simulator.py` | Person 4 | Payment policy ladder + safe override |
-| `main.py` | Person 3 | FastAPI backend (`/health`, `/analyze`, `/payment/decision`, `/metrics`) |
-| `app.py` | Person 5 | Dashboard |
+| `semantic_tests.py` | Person 2 | Smoke tests (6 core behaviours) |
+| `run_eval.py` | Person 2 | Formal evaluation (23 fixtures + metrics + stability) |
+| `vm_test.py` / `vm_evidence.py` | Person 3 | LinuxONE deployment smoke / evidence scripts |
 
 ## Setup
 
@@ -42,6 +41,8 @@ python run_eval.py          # 22-fixture evaluation + safety metrics + stability
 
 ## Status
 
-**Person 2 module: feature-complete** (tag `v0.1-freeze`, + Phase 8). Rule engine + ASR + dispatcher +
-evaluation all working: **23/23 fixtures pass** (English + Hindi + Hinglish), 0 false positives, golden path
-stable across 3 runs. See `EVALUATION_RESULTS.md` for the full evidence handoff to Person 6.
+**Backend deployed and integrated** (tag `v1.0-integration`). Person 1 + Person 2 + Person 3 all wired: the full
+`analyze → token → payment decision` loop is live on **LinuxONE s390x** (evidence in `DEPLOYMENT.md`).
+
+- Person 2 rule engine: 23/23 fixtures pass (English + Hindi + Hinglish), 0 false positives.
+- Open for **P1's adapter** and **P4's real risk engine** — both drop-in, no rearchitecture.
