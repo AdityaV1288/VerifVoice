@@ -10,6 +10,9 @@ __pycache__/
 *.egg-info/
 .ipynb_checkpoints/
 .env
+*.pem
+*.key
+*.crt
 *.wav
 *.mp3
 *.m4a

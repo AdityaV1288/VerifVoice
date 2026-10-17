@@ -27,6 +27,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 import semantic_model  # Person 2's module
+import pipeline        # Person 1 + Person 2 integration layer
 
 # --------------------------------------------------------------------------- #
 # Request / response models
@@ -47,8 +48,13 @@ class AnalyzeResponse(BaseModel):
     reason_codes: list[str]
     signals: dict
     lang: str
-    # --- P1 / P4 fields (filled once those modules exist) ---
-    spoof_score: float | None = None          # TODO(P1): audio_model.spoof_score
+    # --- Person 1 fields (live, via pipeline) ---
+    spoof_score: float | None = None
+    spoof_status: str | None = None
+    spoof_classification: str | None = None
+    quality_score: float | None = None
+    model_name: str | None = None
+    # --- P4 fields (filled once risk_engine exists) ---
     risk_level: str | None = None             # TODO(P4): risk_engine.risk_level
     token_ttl_seconds: int | None = None      # TODO(P4): token expiry
 
@@ -105,23 +111,26 @@ def health():
 
 @app.post("/analyze", response_model=AnalyzeResponse)
 def analyze(req: AnalyzeRequest):
-    """Accept a sample (text or audio) and return the coercion signal."""
+    """Accept a sample (text or audio) and return coercion + spoof signals."""
     t0 = time.perf_counter()
-    result = semantic_model.analyze(req.source, input_type=req.input_type, lang=req.lang)
+    result = pipeline.analyze_call(req.source, input_type=req.input_type, lang=req.lang)
 
     _metrics["analyze_requests"] += 1
     _metrics["last_analyze_ms"] = round((time.perf_counter() - t0) * 1000, 2)
 
-    # TODO(P1): result["spoof_score"] = audio_model.analyze_audio(...).spoof_score
     # TODO(P4): compute risk_level + token_ttl_seconds here, or in /payment/decision.
     return AnalyzeResponse(
-        request_id=str(uuid.uuid4()),
-        audio_status=result["status"],
+        request_id=result["request_id"],
+        audio_status=result["coercion_status"],
         coercion_score=result["coercion_score"],
         reason_codes=result["reason_codes"],
         signals=result["signals"],
         lang=result["lang"],
-        spoof_score=None,           # TODO(P1)
+        spoof_score=result["spoof_score"],
+        spoof_status=result["spoof_status"],
+        spoof_classification=result["spoof_classification"],
+        quality_score=result["quality_score"],
+        model_name=result["model_name"],
         risk_level=None,            # TODO(P4)
         token_ttl_seconds=None,     # TODO(P4)
     )

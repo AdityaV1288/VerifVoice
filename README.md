@@ -16,8 +16,9 @@ speech is never treated as proof of fraud, and the user retains a safe override.
 | `semantic_config.py` | Person 2 | Signals, weights, reason codes, gates |
 | `semantic_tests.py` | Person 2 | Smoke tests (6 core behaviours) |
 | `run_eval.py` | Person 2 | Formal evaluation — 22 fixtures + metrics + stability + no-persistence |
-| `example_api.py` | Person 3 (reference) | Working FastAPI reference showing how to call `semantic_model` — rename to `main.py` |
-| `audio_model.py` | Person 1 | Audio authenticity / anti-spoofing (spoof score) |
+| `example_api.py` | Person 3 (reference) | Working FastAPI reference — rename to `main.py` |
+| `pipeline.py` | Person 3 | Integration layer: runs Person 1 + Person 2 together (`analyze_call`) |
+| `audio_authenticity/` | Person 1 | Audio authenticity package (`analyze_audio` → spoof score) |
 | `risk_engine.py` | Person 4 | Risk fusion `R = 0.5C + 0.3S + 0.2N` + expiring risk token |
 | `bank_simulator.py` | Person 4 | Payment policy ladder + safe override |
 | `main.py` | Person 3 | FastAPI backend (`/health`, `/analyze`, `/payment/decision`, `/metrics`) |
