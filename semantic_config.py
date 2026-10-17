@@ -100,6 +100,10 @@ KEYWORDS = {
         r"\bdon'?t (?:contact|ask|check)\b",
         r"\blines? (?:are|is) down\b",
     ],
+    # KNOWN LIMITATION (Phase 5): keyword matching cannot distinguish "share your
+    # OTP" (scam) from "we will NEVER ask for your OTP" (legit). A negated mention
+    # still fires this signal -> coercion_score +0.20 (LOW, harmless — never blocks
+    # alone). Tracked in PERSON2_ARCHITECTURE.md §7 and PERSON2_TASKS.md Phase 5.
     "financial_instruction": [
         r"\btransfer(?:s|red|ring)?\b",
         r"\bupi\b",
@@ -136,3 +140,8 @@ KEYWORDS = {
         r"\brushed to\b",
     ],
 }
+
+# Transcription (ASR) settings — used by semantic_model.transcribe().
+TRANSCRIBE_MODEL = "base"       # faster-whisper size: tiny | base | small | medium
+TRANSCRIBE_DEVICE = "cpu"
+TRANSCRIBE_COMPUTE = "int8"     # int8 = fast/low-memory on CPU

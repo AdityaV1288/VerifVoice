@@ -10,7 +10,7 @@ P3's backend calls ONLY the dispatcher `analyze()`. The scripted-transcript path
 (input_type="text") is a first-class supported path, so the rule engine is never
 blocked by ASR availability.
 
-Status: Phase 2 — real rule engine (7 regex detectors + weighted score + reason codes).
+Status: Phase 3 — rule engine + faster-whisper transcription.
 """
 
 import re
@@ -62,13 +62,62 @@ def _result(score: float, codes: list, status: str, lang: str) -> dict:
     }
 
 
-def transcribe(audio_path: str, lang: str = "en") -> str:
-    """Transcribe audio to text via faster-whisper (Phase 3).
+_model = None  # cached faster-whisper model (lazy-loaded)
 
-    Returns "" on failure or unsupported input, so callers degrade gracefully.
+
+def _get_model():
+    """Lazily load the faster-whisper model. The import is deferred so the rule
+    engine still works on hosts where faster-whisper is unavailable."""
+    global _model
+    if _model is None:
+        import os
+        # huggingface.co is unreachable from some networks; fall back to a mirror.
+        # setdefault() respects any HF_ENDPOINT the caller already set explicitly.
+        os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
+        from faster_whisper import WhisperModel  # local import (optional dep)
+
+        # Prefer the locally-downloaded model (models/faster-whisper-base) so the
+        # demo works offline; otherwise download by name via the mirror.
+        local = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "models", "faster-whisper-base",
+        )
+        model_name = (
+            local if os.path.isfile(os.path.join(local, "model.bin"))
+            else config.TRANSCRIBE_MODEL
+        )
+
+        _model = WhisperModel(
+            model_name,
+            device=config.TRANSCRIBE_DEVICE,
+            compute_type=config.TRANSCRIBE_COMPUTE,
+        )
+    return _model
+
+
+def transcribe(audio_path: str, lang: str = "auto") -> str:
+    """Transcribe audio to text via faster-whisper.
+
+    lang: "auto" -> whisper auto-detects the language; or a 2-letter code
+    ("en", "hi"). Returns "" on ANY failure so callers degrade to the
+    scripted-transcript path instead of crashing.
+
+    Note: audio is decoded with librosa and passed to faster-whisper as a numpy
+    array, because faster-whisper's built-in av.decode_audio() is incompatible
+    with PyAV >= 15 (removed the `metadata_errors` kwarg).
     """
-    # Phase 3: integrate faster-whisper here. Until then the dispatcher uses text.
-    return ""
+    try:
+        import numpy as np
+        import librosa
+        model = _get_model()
+        # 16 kHz mono float32 — exactly what Whisper expects.
+        audio, _sr = librosa.load(audio_path, sr=16000, mono=True)
+        audio = np.asarray(audio, dtype=np.float32)
+        language = None if lang in (None, "", "auto") else lang
+        segments, _info = model.transcribe(audio, beam_size=1, language=language)
+        return " ".join(seg.text.strip() for seg in segments).strip()
+    except Exception:
+        return ""
 
 
 def analyze_transcript(text: str, lang: str = "en") -> dict:
@@ -123,7 +172,7 @@ def analyze(source: str, input_type: str = "text", lang: str = "en") -> dict:
     This is the ONLY entry point P3 should call.
     """
     if input_type == "audio":
-        text = transcribe(source, lang=lang)
+        text = transcribe(source)  # auto-detect language for ASR
         if not text:
             # No transcript -> abstain (weak signal, never "fraud").
             return _result(0.0, [], "insufficient_text", lang)

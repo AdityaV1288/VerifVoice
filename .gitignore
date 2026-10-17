@@ -16,9 +16,7 @@ __pycache__/
 *.flac
 *.ogg
 data/raw/
-models/*.pt
-models/*.pth
-models/*.onnx
+models/
 *.log
 .DS_Store
 Thumbs.db
