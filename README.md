@@ -41,6 +41,6 @@ python run_eval.py          # 22-fixture evaluation + safety metrics + stability
 
 ## Status
 
-**Person 2 module: feature-complete and FROZEN** (tag `v0.1-freeze`). Rule engine + ASR + dispatcher +
-evaluation all working: 21/22 fixtures pass (1 deferred = Hindi/Hinglish, Phase 8), 0 false positives,
-golden path stable across 3 runs. See `EVALUATION_RESULTS.md` for the full evidence handoff to Person 6.
+**Person 2 module: feature-complete** (tag `v0.1-freeze`, + Phase 8). Rule engine + ASR + dispatcher +
+evaluation all working: **23/23 fixtures pass** (English + Hindi + Hinglish), 0 false positives, golden path
+stable across 3 runs. See `EVALUATION_RESULTS.md` for the full evidence handoff to Person 6.

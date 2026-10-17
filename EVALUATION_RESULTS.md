@@ -14,7 +14,7 @@
 | T05 | coercive | 0.45 | moderate | COERCIVE_URGENCY, FINANCIAL_INSTRUCTION |
 | T06 | coercive | 0.75 | high | AUTHORITY_CLAIM, SECRECY_PRESSURE, VERIFICATION_REFUSAL, FINANCIAL_INSTRUCTION, THREAT |
 | T07 | coercive | 0.75 | high | COERCIVE_URGENCY, AUTHORITY_CLAIM, FINANCIAL_INSTRUCTION, THREAT |
-| T08 | coercive | 0.30 | *(deferred)* | AUTHORITY_CLAIM, FINANCIAL_INSTRUCTION — Hindi/Hinglish keywords land in Phase 8 |
+| T08 | coercive | 0.85 | high | COERCIVE_URGENCY, AUTHORITY_CLAIM, SECRECY_PRESSURE, FINANCIAL_INSTRUCTION, THREAT |
 | T09 | benign | 0.00 | low | — |
 | T10 | benign | 0.00 | low | EMERGENCY_NARRATIVE (context only, not scored) |
 | T11 | benign | 0.20 | low | FINANCIAL_INSTRUCTION |
@@ -23,21 +23,22 @@
 | T14 | benign | 0.00 | low | — |
 | T15 | benign | 0.20 | low | FINANCIAL_INSTRUCTION |
 | T16 | ambiguous | 0.00 | low | *(abstain — insufficient_text)* |
-| T17 | ambiguous | 0.00 | low | *(abstain — unsupported_language)* |
+| T17 | ambiguous | 0.00 | low | *(abstain — unsupported_language, Tamil)* |
 | T18 | ambiguous | 0.45 | moderate | COERCIVE_URGENCY, FINANCIAL_INSTRUCTION, EMERGENCY_NARRATIVE |
 | T19 | ambiguous | 0.00 | low | *(paraphrased coercion — known recall limit)* |
 | T20 | ambiguous | 0.45 | moderate | COERCIVE_URGENCY, FINANCIAL_INSTRUCTION, EMERGENCY_NARRATIVE |
 | T21 | coercive | 0.70 | high | COERCIVE_URGENCY, SECRECY_PRESSURE, VERIFICATION_REFUSAL, FINANCIAL_INSTRUCTION |
 | T22 | coercive | 0.85 | high | COERCIVE_URGENCY, AUTHORITY_CLAIM, SECRECY_PRESSURE, FINANCIAL_INSTRUCTION, THREAT |
+| T23 | coercive | 0.85 | high | COERCIVE_URGENCY, AUTHORITY_CLAIM, SECRECY_PRESSURE, FINANCIAL_INSTRUCTION, THREAT — Devanagari Hindi |
 
 **Bands:** low < 0.30 · moderate 0.30–0.70 · high ≥ 0.70.
 
 ## 2. Safety metrics (headline numbers for the slides)
 
-- **Coercive scams flagged (score ≥ 0.30): 10 / 10**
+- **Coercive scams flagged (score ≥ 0.30): 11 / 11**
 - **Benign calls left alone (score < 0.30): 7 / 7**
 - **False positives: 0**
-- **False negatives: 0** (T05 and T20 correctly land in "moderate"; T08 pending Phase 8)
+- **False negatives: 0**
 
 ## 3. Edge cases (all pass)
 
@@ -63,8 +64,8 @@ memory and never written to disk.
 1. **Keyword recall vs. paraphrase.** The rule layer catches high-precision cues; it can miss reworded coercion
    (e.g. "move some money" instead of "transfer"). This is why the system fuses multiple signals and never relies
    on this module alone. (See fixture T19, which scores 0.0 by design.)
-2. **Language coverage is declared, not universal.** English is implemented; Hindi/Hinglish is a Phase 8 add-on.
-   Unsupported input abstains (`unsupported_language`) rather than guessing.
+2. **Language coverage is declared, not universal.** English, Hindi (Devanagari), and Hinglish are implemented;
+   other Indic languages (Tamil, Telugu, Bengali, …) abstain (`unsupported_language`) rather than guessing.
 3. **`coercion_score` is a demo heuristic, not a calibrated probability.** Weights (0.25/0.20/… ) are engineering
    choices tuned on the 22-fixture set, not validated on real call data.
 4. **ASR quality gates downstream recall.** If faster-whisper mis-transcribes a key word, the rule engine sees the
