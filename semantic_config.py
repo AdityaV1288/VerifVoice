@@ -48,3 +48,91 @@ SUPPORTED_LANGS = {"en"}           # extend with "hi"/"hinglish" in Phase 8
 # Coercion-score bands (informational; P4 owns the actual payment policy).
 BAND_LOW = 0.30
 BAND_HIGH = 0.70
+
+# Keyword patterns per signal. High-precision regex, matched case-insensitively
+# against a normalized transcript. presence-capped: 1 hit == 1.0 (no counting).
+#
+# Design notes:
+#   * "hospital"/"doctor" are NOT authority claims here — they live in
+#     emergency_narrative (a genuine emergency mentions them too). Authority
+#     fires on explicit role claims ("this is Dr. ...", "calling from ...").
+#   * emergency_narrative is reported but NOT scored (see WEIGHTS).
+KEYWORDS = {
+    "urgency": [
+        r"\bact now\b",
+        r"\burgent(?:ly)?\b",
+        r"\bimmediately\b",
+        r"\bright now\b",
+        r"\bwithin \d+ minutes\b",
+        r"\bdon'?t delay\b",
+        r"\bhurry\b",
+        r"\basap\b",
+        r"\bat once\b",
+    ],
+    "authority_claim": [
+        r"\bpolice\b",
+        r"\bbank\b",
+        r"\brbi\b",
+        r"\bofficer\b",
+        r"\bgovernment\b",
+        r"\bcustoms\b",
+        r"\btax department\b",
+        r"\bincome tax\b",
+        r"\bcbi\b",
+        r"\bcyber ?crime\b",
+        r"\belectricity\b",
+        r"\bthis is (?:dr|doctor|professor|inspector|officer|sub-?inspector|senior|constable)\b",
+        r"\bi'?m calling from (?:the )?(?:police|bank|hospital|government|tax|cyber ?crime|electricity)\b",
+    ],
+    "secrecy_pressure": [
+        r"\bdon'?t tell\b",
+        r"\bkeep (?:it|this) (?:private|secret|confidential)\b",
+        r"\bno one (?:else )?should know\b",
+        r"\bdon'?t hang up\b",
+        r"\bstay on the line\b",
+        r"\bbetween (?:just )?us\b",
+    ],
+    "verification_refusal": [
+        r"\bdon'?t verify\b",
+        r"\btrust me\b",
+        r"\bno need to (?:check|confirm|verify|call)\b",
+        r"\bdon'?t call (?:back|the bank|the police|the hospital|them|anyone)\b",
+        r"\bdon'?t (?:contact|ask|check)\b",
+        r"\blines? (?:are|is) down\b",
+    ],
+    "financial_instruction": [
+        r"\btransfer(?:s|red|ring)?\b",
+        r"\bupi\b",
+        r"\botp\b",
+        r"\bpin\b",
+        r"\bbank account\b",
+        r"\bsend money\b",
+        r"\bsend me\b",
+        r"\bsend (?:rs\.?|rupees|inr|₹)?\s*\d",
+        r"\bnet ?banking\b",
+        r"\bqr code\b",
+        r"\bpa(?:y|id|ying|yment)\b",
+    ],
+    "threat": [
+        r"\barrest(?:ed|s)?\b",
+        r"\baccount (?:will be |is )?(?:blocked|frozen|closed|deactivated|seized|emptied)\b",
+        r"\blegal action\b",
+        r"\bjail\b",
+        r"\bcase (?:will be )?filed\b",
+        r"\bdisconnect(?:ed|ion)?\b",
+        r"\bdeactivat(?:e|ed|ion)\b",
+        r"\bpenalty\b",
+        r"\b(?:may|might|will) not survive\b",
+        r"\bnever see (?:her|him|them|you) again\b",
+    ],
+    "emergency_narrative": [
+        r"\baccident\b",
+        r"\binjur(?:ed|y|ies)\b",
+        r"\bhospital\b",
+        r"\bsurgery\b",
+        r"\bemergency\b",
+        r"\bambulance\b",
+        r"\bkidnap(?:ped|ping)?\b",
+        r"\brushed to\b",
+    ],
+}
