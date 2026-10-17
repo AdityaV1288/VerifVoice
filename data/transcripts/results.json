@@ -66,9 +66,9 @@
     "id": "T08",
     "name": "Hindi/Hinglish code-switching",
     "label": "coercive",
-    "score": 0.3,
-    "band": "moderate",
-    "expected": "deferred",
+    "score": 0.85,
+    "band": "high",
+    "expected": "high",
     "status": "analyzed"
   },
   {
@@ -145,7 +145,7 @@
   },
   {
     "id": "T17",
-    "name": "Unsupported language (Devanagari)",
+    "name": "Unsupported language (Tamil)",
     "label": "ambiguous",
     "score": 0.0,
     "band": "low",
@@ -191,6 +191,15 @@
   {
     "id": "T22",
     "name": "Tech-support remote-access scam",
+    "label": "coercive",
+    "score": 0.85,
+    "band": "high",
+    "expected": "high",
+    "status": "analyzed"
+  },
+  {
+    "id": "T23",
+    "name": "Devanagari Hindi bank scam",
     "label": "coercive",
     "score": 0.85,
     "band": "high",

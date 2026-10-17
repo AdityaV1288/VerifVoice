@@ -31,7 +31,7 @@
       "text": "Your electricity bill is overdue. Your power will be disconnected in 30 minutes. Pay Rs 4,000 immediately by UPI to this number to avoid disconnection."
     },
     {
-      "id": "T08", "name": "Hindi/Hinglish code-switching", "label": "coercive", "expected_band": "deferred",
+      "id": "T08", "name": "Hindi/Hinglish code-switching", "label": "coercive", "expected_band": "high",
       "text": "Namaste, main police station se bol raha hoon. Aapka account block ho jayega turant. Jaldi se OTP bata do aur Rs 30,000 transfer karo. Kisi ko mat batana, yeh secret hai. Abhi karo!"
     },
     {
@@ -67,8 +67,8 @@
       "text": "Hello?"
     },
     {
-      "id": "T17", "name": "Unsupported language (Devanagari)", "label": "ambiguous", "expected_band": "low",
-      "text": "यह आपका बैंक है। अपना ओटीपी बताइए और पैसे ट्रांसफर करें। जल्दी करो।"
+      "id": "T17", "name": "Unsupported language (Tamil)", "label": "ambiguous", "expected_band": "low",
+      "text": "இது உங்கள் வங்கி. உங்கள் OTP ஐ பகிரவும் மற்றும் பணத்தை மாற்றவும். சீக்கிரம் செய்யுங்கள்."
     },
     {
       "id": "T18", "name": "Real emergency + new payee (override)", "label": "ambiguous", "expected_band": "moderate",
@@ -89,6 +89,10 @@
     {
       "id": "T22", "name": "Tech-support remote-access scam", "label": "coercive", "expected_band": "high",
       "text": "I'm calling from Microsoft technical support. Your computer has a virus and your bank details are exposed. I need you to download the remote-access app right now and share the OTP. Do not restart your computer and do not tell your bank. If you delay, your account will be emptied."
+    },
+    {
+      "id": "T23", "name": "Devanagari Hindi bank scam", "label": "coercive", "expected_band": "high",
+      "text": "नमस्ते, मैं बैंक से बोल रहा हूँ। आपका खाता ब्लॉक हो जाएगा। जल्दी से अपना ओटीपी बताइए और पैसे ट्रांसफर करें। किसी को मत बताना।"
     }
   ]
 }

@@ -52,14 +52,18 @@ def _normalize(text: str) -> str:
 
 
 def _detect_unsupported(text: str) -> bool:
-    """Heuristic: significant Devanagari content is unsupported until Phase 8
-    adds Hindi/Hinglish keyword lists. Returns True -> abstain, never guess.
+    """Heuristic: flag significant content in scripts we DON'T support (any
+    non-Latin, non-Devanagari letters). English (Latin) and Hindi (Devanagari)
+    are supported; Tamil/Telugu/Bengali/CJK/etc. -> abstain, never guess.
     """
     letters = [c for c in text if c.isalpha()]
     if not letters:
         return False
-    devanagari = sum(1 for c in letters if "\u0900" <= c <= "\u097f")
-    return (devanagari / len(letters)) > 0.2
+    other = sum(
+        1 for c in letters
+        if not c.isascii() and not ("\u0900" <= c <= "\u097f")
+    )
+    return (other / len(letters)) > 0.2
 
 
 def _result(score: float, codes: list, status: str, lang: str) -> dict:

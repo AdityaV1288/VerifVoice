@@ -43,7 +43,7 @@ REASON_CODES = {
 
 # Gates.
 MIN_TOKENS = 5                     # below this -> "insufficient_text"
-SUPPORTED_LANGS = {"en"}           # extend with "hi"/"hinglish" in Phase 8
+SUPPORTED_LANGS = {"en", "hi", "hinglish"}   # English + Hindi (Devanagari) + Hinglish
 
 # Coercion-score bands (informational; P4 owns the actual payment policy).
 BAND_LOW = 0.30
@@ -149,6 +149,46 @@ KEYWORDS = {
         r"\brushed to\b",
     ],
 }
+
+# Phase 8 — Hindi (Devanagari) + Hinglish (Roman) keywords. Merged into KEYWORDS
+# below so a single code-switching transcript matches English and Hindi cues.
+# Devanagari entries are plain substrings (word-boundary \b is ASCII-oriented).
+HINDI_KEYWORDS = {
+    "urgency": [
+        r"\bjaldi\b", r"\bturant\b", r"\babhi\b", r"\bforan\b", r"\bjald se jald\b",
+        "जल्दी", "तुरंत", "अभी", "फौरन", "जल्द से जल्द",
+    ],
+    "authority_claim": [
+        r"\bsarkar\b", r"\badhikari\b", r"\bthana\b",
+        "सरकार", "पुलिस", "बैंक", "अधिकारी", "थाना",
+    ],
+    "secrecy_pressure": [
+        r"\bmat batana\b", r"\bmat batao\b", r"\bbatana mat\b", r"\bchup raho\b",
+        r"\bsecret hai\b",
+        "किसी को मत बताना", "मत बताना", "चुप रहो", "गुप्त",
+    ],
+    "verification_refusal": [
+        r"\bverify mat karo\b", r"\bcheck mat karo\b", r"\bbharosa karo\b",
+        r"\bcall mat karo\b", r"\bphone mat karo\b", r"\btrust karo\b",
+        "भरोसा करो", "कॉल मत करो",
+    ],
+    "financial_instruction": [
+        r"\bpaise\b", r"\bpaisa\b", r"\bbhejo\b", r"\brupaye\b", r"\bpaise bhejo\b",
+        "पैसे", "पैसा", "भेजो", "रुपये", "रकम", "ट्रांसफर", "भुगतान", "ओटीपी", "पिन",
+    ],
+    "threat": [
+        r"\bgiraftar\b", r"\baccount block\b", r"\bblock ho jayega\b",
+        r"\bband ho jayega\b", r"\bcase karenge\b", r"\bjail bhej denge\b",
+        "गिरफ्तार", "जेल", "ब्लॉक", "कैद",
+    ],
+    "emergency_narrative": [
+        r"\bdurgatna\b", r"\baspatal\b", r"\bapaharan\b",
+        "दुर्घटना", "अस्पताल", "अपहरण", "आपातकाल",
+    ],
+}
+
+for _signal, _patterns in HINDI_KEYWORDS.items():
+    KEYWORDS[_signal].extend(_patterns)
 
 # Transcription (ASR) settings — used by semantic_model.transcribe().
 TRANSCRIBE_MODEL = "base"       # faster-whisper size: tiny | base | small | medium

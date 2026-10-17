@@ -59,8 +59,8 @@ CASES = [
         "max_score": 0.05,
     },
     {
-        "name": "T17 unsupported language (Devanagari)",
-        "text": "नमस्ते, आपका खाता ब्लॉक हो जाएगा। जल्दी से पैसे ट्रांसफर करो।",
+        "name": "T17 unsupported language (Tamil)",
+        "text": "இது உங்கள் வங்கி. உங்கள் OTP ஐ பகிரவும் மற்றும் பணத்தை மாற்றவும். சீக்கிரம் செய்யுங்கள்.",
         "expect_status": "unsupported_language",
         "max_score": 0.05,
     },
