@@ -1,0 +1,94 @@
+{
+  "description": "Person 2 labelled transcript fixtures (from PERSON2_TRANSCRIPTS.md).",
+  "bands": { "low": [0.0, 0.30], "moderate": [0.30, 0.70], "high": [0.70, 1.01] },
+  "fixtures": [
+    {
+      "id": "T01", "name": "Son in hospital (golden)", "label": "coercive", "expected_band": "high",
+      "text": "Hello, is this Meera? This is Dr. Sharma calling from City Hospital. Your son Rahul has been in a serious accident and needs emergency surgery right now. We need you to transfer Rs 50,000 immediately to book the operation theatre. Please do not tell anyone about this, it is very delicate. And do not try to call the hospital to verify - the lines are down. If we do not operate in the next hour, he may not survive."
+    },
+    {
+      "id": "T02", "name": "Police legal settlement", "label": "coercive", "expected_band": "high",
+      "text": "This is Inspector Verma from the Cyber Crime department. Your Aadhaar number has been linked to a money laundering case. You will be arrested within 24 hours unless you transfer Rs 25,000 to the official settlement account right now. Do not call the police station to verify, and do not tell your family - this is confidential."
+    },
+    {
+      "id": "T03", "name": "Bank OTP / account blocked", "label": "coercive", "expected_band": "high",
+      "text": "Dear customer, your bank account will be blocked in the next 10 minutes due to suspicious activity. To stop this, share the OTP that has just been sent to your mobile and transfer your balance to the safe account immediately. Do not contact the bank, this line is secure."
+    },
+    {
+      "id": "T04", "name": "Customs / parcel seized", "label": "coercive", "expected_band": "high",
+      "text": "This is a call from Customs. A parcel addressed to you has been seized containing illegal items. Pay a Rs 15,000 clearance fee right now via UPI or a case will be filed against you."
+    },
+    {
+      "id": "T05", "name": "Lottery / prize fee", "label": "coercive", "expected_band": "moderate",
+      "text": "Congratulations! You have won Rs 10 lakh in the KBC lottery. To receive the prize, you must pay a processing fee of Rs 5,000 today. Send it now to claim your winnings before the offer expires."
+    },
+    {
+      "id": "T06", "name": "Kidnapping-style threat", "label": "coercive", "expected_band": "high",
+      "text": "We have your daughter. Do not call anyone. Do not tell the police. Transfer Rs 2 lakh now or you will never see her again."
+    },
+    {
+      "id": "T07", "name": "Electricity disconnection", "label": "coercive", "expected_band": "high",
+      "text": "Your electricity bill is overdue. Your power will be disconnected in 30 minutes. Pay Rs 4,000 immediately by UPI to this number to avoid disconnection."
+    },
+    {
+      "id": "T08", "name": "Hindi/Hinglish code-switching", "label": "coercive", "expected_band": "deferred",
+      "text": "Namaste, main police station se bol raha hoon. Aapka account block ho jayega turant. Jaldi se OTP bata do aur Rs 30,000 transfer karo. Kisi ko mat batana, yeh secret hai. Abhi karo!"
+    },
+    {
+      "id": "T09", "name": "Family catch-up", "label": "benign", "expected_band": "low",
+      "text": "Hi beta, how are you? How was school today? Did you have lunch? We were just thinking about you and wanted to say hello."
+    },
+    {
+      "id": "T10", "name": "Genuine emergency (no money)", "label": "benign", "expected_band": "low",
+      "text": "Hello? Uncle, dad had a small accident and we are at the hospital. The doctors say he is stable. Can you please come to the hospital? We are waiting near the emergency ward."
+    },
+    {
+      "id": "T11", "name": "AAC/TTS benign pharmacy", "label": "benign", "expected_band": "low",
+      "text": "Hello, this is my regular order. Please pay my usual amount to the pharmacy for this month's medicine as always. Thank you."
+    },
+    {
+      "id": "T12", "name": "Legit bank fraud-alert call", "label": "benign", "expected_band": "low",
+      "text": "This is your bank's security team. We noticed a login from a new device. If this was not you, please open our official app to review it. We will never ask for your OTP or PIN. You can call the number on your card."
+    },
+    {
+      "id": "T13", "name": "Friend splitting a bill", "label": "benign", "expected_band": "low",
+      "text": "Hey, that dinner was Rs 1,200 total. Can you send me your Rs 600 share whenever you get a chance? No rush."
+    },
+    {
+      "id": "T14", "name": "Appointment reminder", "label": "benign", "expected_band": "low",
+      "text": "Hello, this is a reminder that you have a dental appointment tomorrow at 11 AM. Please confirm if you will be attending."
+    },
+    {
+      "id": "T15", "name": "Known merchant payment", "label": "benign", "expected_band": "low",
+      "text": "Hi, the grocery delivery is here. The total is Rs 850. Please pay via UPI as usual. Thanks!"
+    },
+    {
+      "id": "T16", "name": "Insufficient text", "label": "ambiguous", "expected_band": "low",
+      "text": "Hello?"
+    },
+    {
+      "id": "T17", "name": "Unsupported language (Devanagari)", "label": "ambiguous", "expected_band": "low",
+      "text": "यह आपका बैंक है। अपना ओटीपी बताइए और पैसे ट्रांसफर करें। जल्दी करो।"
+    },
+    {
+      "id": "T18", "name": "Real emergency + new payee (override)", "label": "ambiguous", "expected_band": "moderate",
+      "text": "It's me. There's been a bad accident and I need you to send Rs 40,000 to this new account right away for the ambulance and admission. I'll explain everything, just please hurry."
+    },
+    {
+      "id": "T19", "name": "Paraphrased coercion (recall gap)", "label": "ambiguous", "expected_band": "low",
+      "text": "I need you to move some money to a different account for me. It has to happen fast, and I'd rather you didn't mention it to anyone just yet."
+    },
+    {
+      "id": "T20", "name": "Urgent legit hospital bill (known payee)", "label": "ambiguous", "expected_band": "moderate",
+      "text": "The hospital needs the Rs 25,000 admission deposit now or they will move your father to a different ward. Please pay the hospital's account quickly."
+    },
+    {
+      "id": "T21", "name": "Romance / investment scam", "label": "coercive", "expected_band": "high",
+      "text": "My love, I found an amazing investment. Transfer Rs 50,000 today and we will double it. Don't tell your family yet - it's a surprise. Trust me, this is a once-in-a-lifetime chance. Act now."
+    },
+    {
+      "id": "T22", "name": "Tech-support remote-access scam", "label": "coercive", "expected_band": "high",
+      "text": "I'm calling from Microsoft technical support. Your computer has a virus and your bank details are exposed. I need you to download the remote-access app right now and share the OTP. Do not restart your computer and do not tell your bank. If you delay, your account will be emptied."
+    }
+  ]
+}

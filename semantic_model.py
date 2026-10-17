@@ -23,6 +23,17 @@ _COMPILED = {
     for key, patterns in config.KEYWORDS.items()
 }
 
+# Mask negated credential requests ("we will NEVER ask for your OTP/PIN") so a
+# bank's own safety warning isn't read as a financial instruction.
+_MASK_NEGATED = re.compile(
+    r"\b(?:never|do not|dont|will not|wont|should not|shouldnt|not) "
+    r"(?:ask|share|give|reveal|disclose|provide|request) "
+    r"(?:you )?(?:for )?(?:your )?"
+    r"(?:otp|pin|password|cvv|credentials)"
+    r"(?:\s*(?:or|and)\s*(?:otp|pin|password|cvv|credentials))*",
+    re.IGNORECASE,
+)
+
 
 def _normalize(text: str) -> str:
     """Lowercase, fix curly apostrophes, expand common contractions, collapse
@@ -159,7 +170,12 @@ def analyze_transcript(text: str, lang: str = "en") -> dict:
     signals = {}
     for key in config.SIGNAL_KEYS:
         patterns = _COMPILED.get(key, [])
-        signals[key] = 1.0 if any(p.search(normalized) for p in patterns) else 0.0
+        subject = (
+            _MASK_NEGATED.sub(" ", normalized)
+            if key == "financial_instruction"
+            else normalized
+        )
+        signals[key] = 1.0 if any(p.search(subject) for p in patterns) else 0.0
 
     # Weighted score (emergency_narrative is deliberately absent from WEIGHTS).
     coercion_score = round(
