@@ -1,22 +1,19 @@
-"""example_api.py — FastAPI reference for Person 3 (backend).
+"""main.py — VerifVoice FastAPI backend (Person 3).
 
-Shows exactly how to wire Person 2's `semantic_model` into the shared API.
-Person 3 owns this file (rename it to `main.py` when you take it over).
+Runs on the LinuxONE VM (s390x). Wires Person 2's `semantic_model` (coercion)
+and Person 1's `audio_authenticity` (spoof) via `pipeline.py`.
 
 Integration points marked "TODO":
-  * P1 (audio authenticity) plugs its `audio_model` into /analyze's `spoof_score`.
   * P4 (risk fusion) plugs its `risk_engine` into /payment/decision and fills
     `risk_level` / `token_ttl_seconds`.
 
-Run (from the repo root):
-    . .\activate.ps1
-    uvicorn example_api:app --reload --port 8000
+Run:
+    uvicorn main:app --host 0.0.0.0 --port 8000
 
 Try it:
-    GET  http://127.0.0.1:8000/health
-    POST http://127.0.0.1:8000/analyze   {"source": "Transfer 50000 now, don't tell anyone", "input_type": "text"}
-    POST http://127.0.0.1:8000/analyze   {"source": "C:/path/to/call.wav", "input_type": "audio"}
-    GET  http://127.0.0.1:8000/metrics
+    GET  http://<host>:8000/health
+    POST http://<host>:8000/analyze   {"source": "Transfer 50000 now, don't tell anyone", "input_type": "text"}
+    GET  http://<host>:8000/metrics
 """
 
 import time
@@ -24,6 +21,7 @@ import uuid
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 import semantic_model  # Person 2's module
@@ -92,6 +90,14 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="VerifVoice API", version="0.1.0", lifespan=lifespan)
+
+# Allow the dashboard (P5) to call this API from any origin.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # --------------------------------------------------------------------------- #
