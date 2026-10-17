@@ -1,13 +1,16 @@
-"""Adapter registry and factory, independent from the detection service."""
+﻿"""Adapter registry and factory, independent from the detection service."""
 
 from collections.abc import Callable
 
 from ..config import DetectorConfig
-from ..exceptions import ModelUnavailableError
 from .base import AudioDetector
+from .onnx_detector import AASISTOnnxDetector
 from .unavailable import UnavailableDetector
 
-_REGISTRY: dict[str, Callable[[], AudioDetector]] = {"unavailable": UnavailableDetector}
+_REGISTRY: dict[str, Callable[[], AudioDetector]] = {
+    "unavailable": UnavailableDetector,
+    "aasist_onnx": AASISTOnnxDetector,
+}
 
 
 def register_adapter(name: str, factory: Callable[[], AudioDetector]) -> None:

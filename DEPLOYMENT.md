@@ -11,7 +11,7 @@
 | `pipeline.py` (P1+P2 integration) | LinuxONE s390x | pure Python |
 | `semantic_model` rule engine (coercion) | **LinuxONE s390x** | the "AI runs on LinuxONE" evidence |
 | `risk_engine` + token store | LinuxONE s390x | fusion + expiring token |
-| `audio_authenticity` (spoof) | LinuxONE s390x | stdlib-only |
+| `audio_authenticity` (spoof, AASIST ONNX) | **laptop only** | onnxruntime + scipy have no s390x wheels |
 | ASR (`faster-whisper` + `librosa`) | **laptop only** | no s390x wheels; text path is the guaranteed LinuxONE path |
 
 ## 2. Reproduce the deployment (fresh VM)
@@ -59,16 +59,21 @@ pkill -f "[u]vicorn main:app"   # bracket trick avoids self-match
 
 - **Real:** the coercion rule engine, the token service, the fusion formula, the payment policy ladder, the
   FastAPI service — all executing on s390x.
-- **Real but uncalibrated:** `coercion_score` is a transparent rule heuristic, not a calibrated probability.
+- **Real:** the AASIST anti-spoofing model (MIT, ASVspoof 2019 LA pretrained) returns a genuine `spoof_score`
+  on the **laptop** (e.g. 0.9997 on a TTS clip). It runs on the laptop, not LinuxONE, because ONNX Runtime and
+  SciPy have no s390x wheels — the video states this boundary.
+- **Real but uncalibrated:** `coercion_score` is a transparent rule heuristic, and `spoof_score` is an
+  uncalibrated softmax — neither is a calibrated probability.
 - **Simulated:** the bank action itself (we never touch a real transfer) — `decision` is a *proposed* policy
   action.
-- **Honestly unavailable:** `spoof_score` is `null` until Person 1 wires a model (the fusion renormalizes onto
-  the coercion signal and flags `SPOOF_UNAVAILABLE`). ASR runs on the laptop, not LinuxONE.
+- **Honestly unavailable:** on LinuxONE, `spoof_score` is still `null` (fusion renormalizes onto coercion and
+  flags `SPOOF_UNAVAILABLE`); ASR also runs on the laptop, not LinuxONE.
 
-## 5. Open for P1 / P4 (drop-in, no rearchitecture)
+## 5. Open points (drop-in, no rearchitecture)
 
-- **P1 (audio authenticity):** add a registered adapter + model, set `VERIFVOICE_ADAPTER`. Then `/health` flips
-  to `ready` and `/analyze` returns a real `spoof_score`. ONNX preferred (s390x) over torch (laptop-only).
+- **P1 (audio authenticity):** ✅ DONE — AASIST ONNX adapter integrated (`VERIFVOICE_ADAPTER=aasist_onnx`,
+  `models/aasist.onnx`). Runs on the laptop. To make it run on LinuxONE, P1 would need s390x builds of
+  onnxruntime + scipy (not available from PyPI today).
 - **P4 (risk fusion):** replace the body of `risk_engine.decide()` (same signature + return shape). `main.py`
   needs no change.
 
