@@ -26,6 +26,8 @@ from pydantic import BaseModel, Field
 
 import semantic_model  # Person 2's module
 import pipeline        # Person 1 + Person 2 integration layer
+import risk_engine     # risk fusion (fallback until P4 delivers)
+import token_store     # in-memory risk tokens
 
 # --------------------------------------------------------------------------- #
 # Request / response models
@@ -40,6 +42,8 @@ class AnalyzeRequest(BaseModel):
 
 class AnalyzeResponse(BaseModel):
     request_id: str
+    token_id: str
+    token_ttl_seconds: int
     # --- Person 2 fields (live) ---
     audio_status: str            # "analyzed" | "insufficient_text" | "unsupported_language"
     coercion_score: float
@@ -52,19 +56,17 @@ class AnalyzeResponse(BaseModel):
     spoof_classification: str | None = None
     quality_score: float | None = None
     model_name: str | None = None
-    # --- P4 fields (filled once risk_engine exists) ---
-    risk_level: str | None = None             # TODO(P4): risk_engine.risk_level
-    token_ttl_seconds: int | None = None      # TODO(P4): token expiry
 
 
 class PaymentDecisionRequest(BaseModel):
-    risk_token: dict = Field(..., description="Unexpired risk token from P4's /analyze")
+    token_id: str = Field(..., description="Token returned by /analyze")
     amount: float = Field(..., description="Proposed transfer amount (INR)")
     new_beneficiary: bool = Field(False, description="True if payee is new/unusual")
 
 
 class PaymentDecisionResponse(BaseModel):
     decision: str                              # "observe" | "warn" | "verify" | "pause"
+    risk_score: float
     reason_codes: list[str]
     message: str
 
@@ -124,9 +126,17 @@ def analyze(req: AnalyzeRequest):
     _metrics["analyze_requests"] += 1
     _metrics["last_analyze_ms"] = round((time.perf_counter() - t0) * 1000, 2)
 
-    # TODO(P4): compute risk_level + token_ttl_seconds here, or in /payment/decision.
+    # Store the scores under a short-lived token for /payment/decision.
+    token_id, ttl = token_store.create_token({
+        "coercion_score": result["coercion_score"],
+        "spoof_score": result["spoof_score"],
+        "reason_codes": result["reason_codes"],
+    })
+
     return AnalyzeResponse(
         request_id=result["request_id"],
+        token_id=token_id,
+        token_ttl_seconds=ttl,
         audio_status=result["coercion_status"],
         coercion_score=result["coercion_score"],
         reason_codes=result["reason_codes"],
@@ -137,26 +147,35 @@ def analyze(req: AnalyzeRequest):
         spoof_classification=result["spoof_classification"],
         quality_score=result["quality_score"],
         model_name=result["model_name"],
-        risk_level=None,            # TODO(P4)
-        token_ttl_seconds=None,     # TODO(P4)
     )
 
 
 @app.post("/payment/decision", response_model=PaymentDecisionResponse)
 def payment_decision(req: PaymentDecisionRequest):
-    """Combine an unexpired risk token with transaction context.
-
-    This is P4's domain (risk_engine.py + bank_simulator.py). The stub below
-    shows the contract P4 will fill: R = 0.5*C + 0.3*S + 0.2*N.
-    """
+    """Combine an unexpired risk token with transaction context (R = 0.5C + 0.3S + 0.2N)."""
     t0 = time.perf_counter()
+    token = token_store.get_token(req.token_id)
+    if token is None:
+        raise HTTPException(status_code=400, detail="token expired or unknown")
+
+    result = risk_engine.decide(
+        coercion_score=token["coercion_score"],
+        spoof_score=token["spoof_score"],
+        new_beneficiary=req.new_beneficiary,
+        amount=req.amount,
+    )
+
+    # Merge call-derived codes with transaction codes (NEW_PAYEE, SPOOF_UNAVAILABLE, ...).
+    reason_codes = list(dict.fromkeys(token.get("reason_codes", []) + result["reason_codes"]))
+
     _metrics["payment_requests"] += 1
     _metrics["last_payment_ms"] = round((time.perf_counter() - t0) * 1000, 2)
 
-    # TODO(P4): replace with a real call to risk_engine / bank_simulator.
-    raise HTTPException(
-        status_code=501,
-        detail="Payment decision is Person 4's module — not wired yet.",
+    return PaymentDecisionResponse(
+        decision=result["decision"],
+        risk_score=result["risk_score"],
+        reason_codes=reason_codes,
+        message=result["message"],
     )
 
 
